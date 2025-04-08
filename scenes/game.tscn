@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://bhn16xdocqh3n"]
+
+[ext_resource type="PackedScene" uid="uid://chfc1mx8osgug" path="res://scenes/game_menu.tscn" id="1_uwrxv"]
+[ext_resource type="Script" uid="uid://b3y8utsydijce" path="res://scripts/multiplayer_manager.gd" id="1_yqjtg"]
+[ext_resource type="PackedScene" uid="uid://uwegdrfypbbt" path="res://scenes/player.tscn" id="2_lnu2h"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_yqjtg"]
+size = Vector2(1200, 700)
+orientation = 2
+
+[node name="Game" type="Node2D"]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://uwegdrfypbbt")
+spawn_path = NodePath("../PlayerSpawn")
+
+[node name="MultiplayerManager" type="Node" parent="." node_paths=PackedStringArray("_player_spawn")]
+script = ExtResource("1_yqjtg")
+_player_spawn = NodePath("../PlayerSpawn")
+_player_scene = ExtResource("2_lnu2h")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="World"]
+position = Vector2(575, 325)
+mesh = SubResource("PlaneMesh_yqjtg")
+
+[node name="GameMenu" parent="." instance=ExtResource("1_uwrxv")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(577, 324)
+
+[node name="PlayerSpawn" type="Node2D" parent="."]

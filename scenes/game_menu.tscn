@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=3 uid="uid://chfc1mx8osgug"]
+
+[ext_resource type="Script" uid="uid://dwugmyi3e4x48" path="res://scripts/game_menu.gd" id="1_qdaa4"]
+
+[node name="GameMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_qdaa4")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 425.0
+offset_top = 21.0
+offset_right = 696.0
+offset_bottom = 52.0
+
+[node name="CopyHost" type="Button" parent="Panel/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Copy Host IP"
+
+[node name="CopyGameId" type="Button" parent="Panel/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Copy Game ID"
+
+[node name="MainMenu" type="Button" parent="Panel/HBoxContainer"]
+layout_mode = 2
+text = "MainMenu"
+
+[connection signal="pressed" from="Panel/HBoxContainer/CopyHost" to="." method="_on_copy_host_pressed"]
+[connection signal="pressed" from="Panel/HBoxContainer/CopyGameId" to="." method="_on_copy_gameid_pressed"]
+[connection signal="pressed" from="Panel/HBoxContainer/MainMenu" to="." method="_on_main_menu_pressed"]

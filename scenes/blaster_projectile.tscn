@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://c86sdixlxsrlb"]
+
+[ext_resource type="Script" uid="uid://bsxg0cf4x3kc0" path="res://scripts/blaster_projectile.gd" id="1_icp06"]
+[ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="2_8r3xp"]
+
+[sub_resource type="Gradient" id="Gradient_icp06"]
+colors = PackedColorArray(0, 0, 0, 1, 0.984314, 0.0392157, 0.309804, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_8r3xp"]
+gradient = SubResource("Gradient_icp06")
+fill_from = Vector2(0.581197, 0.502137)
+fill_to = Vector2(0, 0.514957)
+
+[node name="BlasterProjectile" type="Node2D"]
+script = ExtResource("1_icp06")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("GradientTexture2D_8r3xp")
+
+[node name="TickInterpolator" type="Node" parent="." node_paths=PackedStringArray("root")]
+script = ExtResource("2_8r3xp")
+root = NodePath("..")
+properties = Array[String]([":global_position"])
+metadata/_custom_type_script = "uid://dour8fehaaugp"

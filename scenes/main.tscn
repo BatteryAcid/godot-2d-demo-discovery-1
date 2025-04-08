@@ -1,9 +1,71 @@
-[gd_scene format=3 uid="uid://c5wgbdwj4v2pl"]
+[gd_scene load_steps=3 format=3 uid="uid://c5wgbdwj4v2pl"]
 
-[node name="Main" type="Control"]
+[ext_resource type="Script" uid="uid://b2emy4sbjrqol" path="res://scripts/main.gd" id="1_o5qli"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o5qli"]
+bg_color = Color(0.152941, 0.843137, 0.6, 1)
+
+[node name="Main" type="Control" node_paths=PackedStringArray("host_ip", "game_id")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_o5qli")
+host_ip = NodePath("Panel/VBoxContainer/Host")
+game_id = NodePath("Panel/VBoxContainer/GameId")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+offset_left = 340.0
+offset_right = 340.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 61.0
+offset_top = 56.0
+offset_right = 402.0
+offset_bottom = 164.0
+
+[node name="OptionsLabel" type="RichTextLabel" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Game Options"
+
+[node name="Host" type="LineEdit" parent="Panel/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Host IP"
+
+[node name="GameId" type="LineEdit" parent="Panel/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Game ID (Only for joining game)"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 258.0
+offset_top = 171.0
+offset_right = 401.0
+offset_bottom = 237.0
+
+[node name="HostGame" type="Button" parent="Panel/VBoxContainer2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_o5qli")
+text = "Host Game"
+
+[node name="JoinGame" type="Button" parent="Panel/VBoxContainer2"]
+layout_mode = 2
+text = "Join Game"
+
+[node name="Exit" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 8.0
+offset_right = 395.0
+offset_bottom = 39.0
+text = "Exit"
+
+[connection signal="pressed" from="Panel/VBoxContainer2/HostGame" to="." method="_on_host_game_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer2/JoinGame" to="." method="_on_join_game_pressed"]
+[connection signal="pressed" from="Panel/Exit" to="." method="_on_exit_pressed"]
