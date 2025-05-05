@@ -2,23 +2,30 @@
 
 [ext_resource type="Script" uid="uid://bsxg0cf4x3kc0" path="res://scripts/blaster_projectile.gd" id="1_icp06"]
 [ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="2_8r3xp"]
+[ext_resource type="SpriteFrames" uid="uid://d0mfssqc22era" path="res://assets/projectile_1.tres" id="2_43ctq"]
 
-[sub_resource type="Gradient" id="Gradient_icp06"]
-colors = PackedColorArray(0, 0, 0, 1, 0.984314, 0.0392157, 0.309804, 1)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8r3xp"]
+size = Vector2(54, 52)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_8r3xp"]
-gradient = SubResource("Gradient_icp06")
-fill_from = Vector2(0.581197, 0.502137)
-fill_to = Vector2(0, 0.514957)
-
-[node name="BlasterProjectile" type="Node2D"]
+[node name="BlasterProjectile" type="Area2D" node_paths=PackedStringArray("_projectile_sprite")]
 script = ExtResource("1_icp06")
+_projectile_sprite = NodePath("AnimatedSprite2D")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = SubResource("GradientTexture2D_8r3xp")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(1, -3)
+scale = Vector2(0.31068, 0.31068)
+sprite_frames = ExtResource("2_43ctq")
+autoplay = "default"
+frame_progress = 0.120739
+flip_h = true
 
 [node name="TickInterpolator" type="Node" parent="." node_paths=PackedStringArray("root")]
 script = ExtResource("2_8r3xp")
 root = NodePath("..")
-properties = Array[String]([":global_position"])
+properties = Array[String]([":global_transform"])
 metadata/_custom_type_script = "uid://dour8fehaaugp"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_8r3xp")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

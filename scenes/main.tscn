@@ -1,9 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://c5wgbdwj4v2pl"]
+[gd_scene load_steps=5 format=3 uid="uid://c5wgbdwj4v2pl"]
 
 [ext_resource type="Script" uid="uid://b2emy4sbjrqol" path="res://scripts/main.gd" id="1_o5qli"]
+[ext_resource type="Texture2D" uid="uid://b4ycckbl7agdq" path="res://assets/menu-bg.jpg" id="2_0wfyh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0wfyh"]
+bg_color = Color(5.77569e-07, 0.653454, 0.877179, 0.176471)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o5qli"]
 bg_color = Color(0.152941, 0.843137, 0.6, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+expand_margin_top = 1.0
+expand_margin_bottom = 1.0
 
 [node name="Main" type="Control" node_paths=PackedStringArray("host_ip", "game_id")]
 layout_mode = 3
@@ -16,10 +26,26 @@ script = ExtResource("1_o5qli")
 host_ip = NodePath("Panel/VBoxContainer/Host")
 game_id = NodePath("Panel/VBoxContainer/GameId")
 
+[node name="Loading" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_0wfyh")
+expand_mode = 3
+
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 1
-offset_left = 340.0
-offset_right = 340.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 1.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0wfyh")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
 layout_mode = 0
@@ -35,6 +61,7 @@ text = "Game Options"
 
 [node name="Host" type="LineEdit" parent="Panel/VBoxContainer"]
 layout_mode = 2
+text = "tomfol.io"
 placeholder_text = "Host IP"
 
 [node name="GameId" type="LineEdit" parent="Panel/VBoxContainer"]
@@ -43,10 +70,12 @@ placeholder_text = "Game ID (Only for joining game)"
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="Panel"]
 layout_mode = 0
-offset_left = 258.0
-offset_top = 171.0
-offset_right = 401.0
-offset_bottom = 237.0
+offset_left = 436.0
+offset_top = 91.0
+offset_right = 579.0
+offset_bottom = 157.0
+theme_override_constants/separation = 9
+alignment = 1
 
 [node name="HostGame" type="Button" parent="Panel/VBoxContainer2"]
 layout_mode = 2
@@ -60,10 +89,10 @@ text = "Join Game"
 
 [node name="Exit" type="Button" parent="Panel"]
 layout_mode = 0
-offset_left = 345.0
-offset_top = 8.0
-offset_right = 395.0
-offset_bottom = 39.0
+offset_left = 1082.0
+offset_top = 18.0
+offset_right = 1132.0
+offset_bottom = 49.0
 text = "Exit"
 
 [connection signal="pressed" from="Panel/VBoxContainer2/HostGame" to="." method="_on_host_game_pressed"]

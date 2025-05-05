@@ -15,21 +15,31 @@ func _ready():
 # Hosting Noray - entry point
 func create_server_peer(host_ip: String):
 	print("Create Noray server peer")
-	await _register_with_noray(host_ip)
-	_start_noray_host()
+	var err = await _register_with_noray(host_ip)
+	if err == OK:
+		err = await _start_noray_host()
+	else:
+		print("Failed to register with Noray")
+	
+	return err
 	
 # Joining Noray as client - entry point
 func create_client_peer(host_ip: String, game_id: String):
 	print("create Noray client peer")
-	
+	var err = OK
 	# Stash the game id (oid)
 	_current_host_oid = game_id
-	await _register_with_noray(host_ip)
+	err = await _register_with_noray(host_ip)
+	if err != OK:
+		print("Client registration with Noray failed!")
+		return err
 	
 	setup_client_enet_connection_signals()
 	
-	Noray.connect_nat(game_id)
-
+	# TODO: just use relay when testing at home
+	#Noray.connect_nat(game_id)
+	Noray.connect_relay(game_id)
+	return err
 
 func _register_with_noray(host_ip: String):
 	print("Register with Noray hosted at: %s" % host_ip)
@@ -56,6 +66,7 @@ func _register_with_noray(host_ip: String):
 		return err
 	
 	print("Finished Noray registration")
+	return err
 
 func _start_noray_host():
 	print("Starting Noray host")
@@ -63,23 +74,35 @@ func _start_noray_host():
 	
 	var noray_network_peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 	err = noray_network_peer.create_server(Noray.local_port)
-	multiplayer.multiplayer_peer = noray_network_peer
-	
 	if err != OK:
 		print("Failed to listen on port %s with error: %s" % [Noray.local_port, err])
 
+	get_tree().get_multiplayer().multiplayer_peer = noray_network_peer
 
+	# Wait for server to start
+	# Wait for the connection status to change away from Connecting, whether it's successful or not
+	await Async.condition(
+		func(): return noray_network_peer.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTING
+	)
+	
+	if noray_network_peer.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+		OS.alert("Failed to start server!")
+		err = FAILED
+
+	return err
+
+# This is called on the host once a client is detected
 func _handle_noray_client_connect(address: String, port: int) -> Error:
 	print("Noray host handle connect: %s:%s" % [address, port])
-	var peer = multiplayer.multiplayer_peer as ENetMultiplayerPeer
+	var peer = get_tree().get_multiplayer().multiplayer_peer as ENetMultiplayerPeer
 	var err = await PacketHandshake.over_enet(peer.host, address, port)
 	
 	if err != OK:
 		print("Noray packet handshake failed %s" % err)
 		return err
-	
-	return OK
 
+	print("Handshake to %s:%s concluded" % [address, port])
+	return OK
 
 func _handle_nat_connect(address: String, port: int) -> Error:
 	print("Attempting to connect client via NAT: %s:%s" % [address, port])
@@ -103,14 +126,19 @@ func _handle_connect(address: String, port: int) -> Error:
 	var udp = PacketPeerUDP.new()
 	udp.bind(Noray.local_port)
 	udp.set_dest_address(address, port)
-	
-	var err = await PacketHandshake.over_packet_peer(udp, 8)
+
+	var err = await PacketHandshake.over_packet_peer(udp) # 8 is default
 	udp.close()
 	
 	if err != OK:
-		print("Client packet handshake failed %s" % err)
-		return err
-		
+		if err == ERR_BUSY:
+			print("Handshake to %s:%s succeeded partially, attempting connection anyway" % [address, port])
+		else:
+			print("Client packet handshake failed %s" % err)
+			return err
+	else:
+			print("Handshake to %s:%s succeeded" % [address, port])
+
 	# Connect to host
 	var peer = ENetMultiplayerPeer.new()
 	err = peer.create_client(address, port, 0, 0, 0, Noray.local_port)
@@ -118,10 +146,24 @@ func _handle_connect(address: String, port: int) -> Error:
 	if err != OK:
 		print("Create client failed %s" % err)
 		return err
-		
-	multiplayer.multiplayer_peer = peer
-	return OK
 
+	get_tree().get_multiplayer().multiplayer_peer = peer
+	
+	# Wait for the connection status to change away from Connecting, whether it's successful or not
+	await Async.condition(
+		func(): return peer.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTING
+	)
+		
+	if peer.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+		print("Failed to connect to %s:%s with status %s" % [address, port, peer.get_connection_status()])
+		get_tree().get_multiplayer().multiplayer_peer = null
+		# Connection failed, reset
+		NetworkManager.disconnect_from_game()
+		return ERR_CANT_CONNECT
+	else:
+		print("connection to relay done")
+
+	return OK
 
 # Noray connection signals
 func setup_host_noray_connection_signals():

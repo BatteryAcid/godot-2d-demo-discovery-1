@@ -1,0 +1,55 @@
+[gd_scene load_steps=3 format=3 uid="uid://ddxrdr626gnxk"]
+
+[ext_resource type="Texture2D" uid="uid://2jhpoq23y5m5" path="res://assets/loading.jpg" id="1_ep5rh"]
+[ext_resource type="Script" uid="uid://ce8jqjhkmanyk" path="res://scripts/loading_screen.gd" id="1_hprjd"]
+
+[node name="LoadingScreen" type="Control"]
+top_level = true
+z_index = 100
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hprjd")
+
+[node name="Loading" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_ep5rh")
+expand_mode = 3
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -722.0
+offset_top = 239.0
+offset_right = -168.0
+offset_bottom = 314.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_y = 5
+theme_override_font_sizes/normal_font_size = 36
+text = "Loading..."
+horizontal_alignment = 1
+
+[node name="MainMenu" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1035.0
+offset_top = 18.0
+offset_right = 1131.0
+offset_bottom = 49.0
+text = "Main Menu"
+flat = true
+
+[connection signal="pressed" from="MainMenu" to="." method="_on_main_menu_pressed"]

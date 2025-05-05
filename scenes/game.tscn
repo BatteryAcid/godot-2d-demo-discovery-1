@@ -1,23 +1,29 @@
-[gd_scene load_steps=5 format=3 uid="uid://bhn16xdocqh3n"]
+[gd_scene load_steps=12 format=3 uid="uid://bhn16xdocqh3n"]
 
+[ext_resource type="Script" uid="uid://b4hrxbaqdm78t" path="res://scripts/game.gd" id="1_iywne"]
 [ext_resource type="PackedScene" uid="uid://chfc1mx8osgug" path="res://scenes/game_menu.tscn" id="1_uwrxv"]
-[ext_resource type="Script" uid="uid://b3y8utsydijce" path="res://scripts/multiplayer_manager.gd" id="1_yqjtg"]
-[ext_resource type="PackedScene" uid="uid://uwegdrfypbbt" path="res://scenes/player.tscn" id="2_lnu2h"]
+[ext_resource type="PackedScene" uid="uid://cnoor8qv0iakp" path="res://scenes/connection_lifecycle_handler.tscn" id="2_p57ef"]
+[ext_resource type="PackedScene" uid="uid://cl6ppopdbiwyb" path="res://scenes/player_spawn_manager.tscn" id="3_lbhrr"]
+[ext_resource type="Texture2D" uid="uid://d1fletx2xqiuu" path="res://assets/moon/moon_sky.png" id="4_iywne"]
+[ext_resource type="Texture2D" uid="uid://bb145xlu1yix6" path="res://assets/moon/moon_back.png" id="5_p57ef"]
+[ext_resource type="Texture2D" uid="uid://bibx8r46c62ci" path="res://assets/moon/moon_earth.png" id="6_u5sy4"]
+[ext_resource type="Texture2D" uid="uid://coo1pk4osyagw" path="res://assets/moon/moon_mid.png" id="7_gee14"]
+[ext_resource type="Texture2D" uid="uid://jgbd1gf2355y" path="res://assets/moon/moon_floor.png" id="8_0tnpc"]
+[ext_resource type="Texture2D" uid="uid://dvfiu40ei8vi4" path="res://assets/moon/moon_front.png" id="8_vtaks"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_yqjtg"]
 size = Vector2(1200, 700)
 orientation = 2
 
-[node name="Game" type="Node2D"]
+[node name="Game" type="Node2D" node_paths=PackedStringArray("player_spawn")]
+script = ExtResource("1_iywne")
+connection_lifecycle_handler = ExtResource("2_p57ef")
+player_spawn_manager = ExtResource("3_lbhrr")
+player_spawn = NodePath("PlayerSpawn")
 
 [node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://uwegdrfypbbt")
 spawn_path = NodePath("../PlayerSpawn")
-
-[node name="MultiplayerManager" type="Node" parent="." node_paths=PackedStringArray("_player_spawn")]
-script = ExtResource("1_yqjtg")
-_player_spawn = NodePath("../PlayerSpawn")
-_player_scene = ExtResource("2_lnu2h")
 
 [node name="World" type="Node2D" parent="."]
 
@@ -25,9 +31,73 @@ _player_scene = ExtResource("2_lnu2h")
 position = Vector2(575, 325)
 mesh = SubResource("PlaneMesh_yqjtg")
 
+[node name="Backgrounds" type="Node2D" parent="World"]
+
+[node name="Sky" type="Parallax2D" parent="World/Backgrounds"]
+repeat_size = Vector2(1400, 0)
+autoscroll = Vector2(1, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Backgrounds/Sky"]
+position = Vector2(-26, -28)
+scale = Vector2(0.738, 0.738)
+texture = ExtResource("4_iywne")
+centered = false
+
+[node name="Parallax2D2" type="Parallax2D" parent="World/Backgrounds"]
+repeat_size = Vector2(2048, 0)
+autoscroll = Vector2(-5, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Backgrounds/Parallax2D2"]
+position = Vector2(-225, 2)
+scale = Vector2(1.034, 1.034)
+texture = ExtResource("6_u5sy4")
+centered = false
+
+[node name="Parallax2D" type="Parallax2D" parent="World/Backgrounds"]
+repeat_size = Vector2(2180, 0)
+autoscroll = Vector2(10, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Backgrounds/Parallax2D"]
+position = Vector2(-4, -7)
+scale = Vector2(0.575, 0.575)
+texture = ExtResource("5_p57ef")
+centered = false
+
+[node name="Parallax2D3" type="Parallax2D" parent="World/Backgrounds"]
+repeat_size = Vector2(2052, 0)
+autoscroll = Vector2(60, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Backgrounds/Parallax2D3"]
+position = Vector2(-13, 130)
+scale = Vector2(0.54, 0.54)
+texture = ExtResource("7_gee14")
+centered = false
+
+[node name="Parallax2D4" type="Parallax2D" parent="World/Backgrounds"]
+repeat_size = Vector2(1808, 0)
+autoscroll = Vector2(500, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Backgrounds/Parallax2D4"]
+position = Vector2(-29, 187)
+scale = Vector2(0.476, 0.476)
+texture = ExtResource("8_vtaks")
+centered = false
+
+[node name="Parallax2D5" type="Parallax2D" parent="World/Backgrounds"]
+repeat_size = Vector2(4000, 0)
+autoscroll = Vector2(800, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="World/Backgrounds/Parallax2D5"]
+position = Vector2(816, 69)
+scale = Vector2(0.594, 0.594)
+texture = ExtResource("8_0tnpc")
+centered = false
+
 [node name="GameMenu" parent="." instance=ExtResource("1_uwrxv")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(577, 324)
 
 [node name="PlayerSpawn" type="Node2D" parent="."]
+
+[node name="Projectiles" type="Node2D" parent="."]

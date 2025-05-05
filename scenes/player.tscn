@@ -1,31 +1,76 @@
-[gd_scene load_steps=8 format=3 uid="uid://uwegdrfypbbt"]
+[gd_scene load_steps=13 format=3 uid="uid://uwegdrfypbbt"]
 
 [ext_resource type="Script" uid="uid://cp7lwunontdfb" path="res://player.gd" id="1_qhqgy"]
 [ext_resource type="Script" uid="uid://cstiyg8mg3lss" path="res://scripts/blaster_weapon.gd" id="2_dqkch"]
+[ext_resource type="SpriteFrames" uid="uid://7ciioui01cy0" path="res://assets/ship1_spritesheet.tres" id="2_fjrip"]
 [ext_resource type="Script" uid="uid://caet11ms6ndjd" path="res://scripts/player_input.gd" id="2_g2els"]
 [ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="3_qhqgy"]
 [ext_resource type="PackedScene" uid="uid://c86sdixlxsrlb" path="res://scenes/blaster_projectile.tscn" id="4_tuyoq"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_u8vuu"]
-size = Vector2(50, 50)
+[ext_resource type="SpriteFrames" uid="uid://ltt8mqtna8j1" path="res://assets/blaster_1.tres" id="5_smehm"]
+[ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="6_tuyoq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8vuu"]
 size = Vector2(50, 50)
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_player_input")]
-script = ExtResource("1_qhqgy")
-_player_input = NodePath("PlayerInput")
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qlg0r"]
+properties/0/path = NodePath(".:visible")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:_health")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:_player_dead")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:_next_respawn_transform")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:paused")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath(".:ready_play_again")
+properties/5/spawn = true
+properties/5/replication_mode = 2
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = SubResource("PlaceholderTexture2D_u8vuu")
+[sub_resource type="Gradient" id="Gradient_smehm"]
+resource_local_to_scene = true
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.0612313, 0.777484, 3.85046e-07, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ur7pv"]
+resource_local_to_scene = true
+gradient = SubResource("Gradient_smehm")
+width = 100
+height = 8
+
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_player_spritesheet", "_player_input", "_health_bar")]
+script = ExtResource("1_qhqgy")
+_player_spritesheet = NodePath("AnimatedSprite2D")
+_player_input = NodePath("PlayerInput")
+_health_bar = NodePath("HealthBarContainer/HealthBar")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(7, 0)
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("2_fjrip")
+autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_u8vuu")
 
-[node name="BlasterWeapon" type="Node2D" parent="."]
+[node name="BlasterWeapon" type="Node2D" parent="." node_paths=PackedStringArray("fire_out", "input")]
 script = ExtResource("2_dqkch")
+fire_out = NodePath("AnimatedSprite2D")
 projectile = ExtResource("4_tuyoq")
-fire_cooldown = 0.25
+input = NodePath("../PlayerInput")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="BlasterWeapon"]
+z_index = 1
+position = Vector2(0, 14)
+scale = Vector2(3.63636, 3.2)
+sprite_frames = ExtResource("5_smehm")
+frame_progress = 0.118883
+offset = Vector2(-5, 0)
 
 [node name="PlayerInput" type="Node" parent="."]
 script = ExtResource("2_g2els")
@@ -33,6 +78,48 @@ script = ExtResource("2_g2els")
 [node name="RollbackSynchronizer" type="Node" parent="." node_paths=PackedStringArray("root")]
 script = ExtResource("3_qhqgy")
 root = NodePath("..")
-state_properties = Array[String]([":position", ":velocity"])
+state_properties = Array[String]([":transform", ":velocity"])
 input_properties = Array[String](["PlayerInput:input_dir", "PlayerInput:is_weapon_firing"])
+enable_input_broadcast = false
 metadata/_custom_type_script = "uid://d350u8evihs1u"
+
+[node name="TickInterpolator" type="Node" parent="." node_paths=PackedStringArray("root")]
+script = ExtResource("6_tuyoq")
+root = NodePath("..")
+properties = Array[String]([":transform", ":velocity"])
+metadata/_custom_type_script = "uid://dour8fehaaugp"
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_qlg0r")
+
+[node name="HealthBarContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = 35.0
+offset_right = 50.0
+offset_bottom = 43.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="HealthBar" type="TextureProgressBar" parent="HealthBarContainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -4.0
+offset_right = 50.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 5.0
+value = 5.0
+texture_progress = SubResource("GradientTexture2D_ur7pv")
