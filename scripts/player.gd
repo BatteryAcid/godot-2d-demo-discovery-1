@@ -1,6 +1,6 @@
 class_name Player extends CharacterBody2D
 
-@export var _player_spritesheet: AnimatedSprite2D
+@export var _player_sprite: AnimatedSprite2D
 @export var _player_input: PlayerInput
 @export var _respawn_time: float = 2.0
 @export var _health_bar: TextureProgressBar
@@ -49,7 +49,7 @@ func _ready():
 			NetworkManager.hide_loading()
 	
 	if str(name).to_int() != 1:
-		_player_spritesheet.animation = "ship2"
+		_player_sprite.animation = "ship2"
 	
 	# Call this after setting authority
 	# https://foxssake.github.io/netfox/latest/netfox/tutorials/responsive-player-movement/#ownership

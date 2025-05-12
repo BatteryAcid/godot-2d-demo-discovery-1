@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=3 uid="uid://uwegdrfypbbt"]
 
-[ext_resource type="Script" uid="uid://cp7lwunontdfb" path="res://player.gd" id="1_qhqgy"]
+[ext_resource type="Script" uid="uid://cp7lwunontdfb" path="res://scripts/player.gd" id="1_qhqgy"]
 [ext_resource type="Script" uid="uid://cstiyg8mg3lss" path="res://scripts/blaster_weapon.gd" id="2_dqkch"]
 [ext_resource type="SpriteFrames" uid="uid://7ciioui01cy0" path="res://assets/ship1_spritesheet.tres" id="2_fjrip"]
 [ext_resource type="Script" uid="uid://caet11ms6ndjd" path="res://scripts/player_input.gd" id="2_g2els"]
@@ -43,9 +43,9 @@ gradient = SubResource("Gradient_smehm")
 width = 100
 height = 8
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_player_spritesheet", "_player_input", "_health_bar")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_player_sprite", "_player_input", "_health_bar")]
 script = ExtResource("1_qhqgy")
-_player_spritesheet = NodePath("AnimatedSprite2D")
+_player_sprite = NodePath("AnimatedSprite2D")
 _player_input = NodePath("PlayerInput")
 _health_bar = NodePath("HealthBarContainer/HealthBar")
 
